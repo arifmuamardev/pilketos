@@ -29,7 +29,7 @@ export default function Voters(){
     setElection(e)
     if(!e){setVoters([]);setStations([]);return}
     const [{data:v,error:vErr},{data:s,error:sErr}]=await Promise.all([
-      supabase.from('voters').select('id,student_number,name,class_name,has_voted,polling_station_id,polling_stations(name,code)').eq('election_id',e.id).order('name'),
+      supabase.from('voters').select('id,student_number,name,class_name,has_voted,polling_station_id,pin_issued_at,polling_stations(name,code)').eq('election_id',e.id).order('name'),
       supabase.from('polling_stations').select('id,name,code').eq('election_id',e.id).order('code')
     ])
     if(vErr||sErr)setMessage(vErr?.message||sErr?.message)
@@ -50,7 +50,7 @@ export default function Voters(){
   },[stations])
 
   function downloadTemplate(){
-    const rows=[['NIS','Nama','Kelas','TPS'],['10231','Ahmad Fauzan','X TKJ 1','TPS-01']]
+    const rows=[['NISN','Nama','Kelas','TPS'],['0012345678','Ahmad Fauzan','X TKJ 1','TPS-01']]
     const ws=XLSX.utils.aoa_to_sheet(rows)
     const wb=XLSX.utils.book_new()
     XLSX.utils.book_append_sheet(wb,ws,'DPT')
@@ -74,13 +74,13 @@ export default function Voters(){
         const tpsText=String(pick(row,['TPS','Kode TPS','polling_station'])).trim()
         const station=stationMap.get(normalizeKey(tpsText))
         const errors=[]
-        if(!nis)errors.push('NIS kosong')
+        if(!nis)errors.push('NISN kosong')
         if(!name)errors.push('Nama kosong')
         if(!className)errors.push('Kelas kosong')
         if(!tpsText)errors.push('TPS kosong')
         else if(!station)errors.push('TPS tidak ditemukan')
-        if(nis&&existing.has(nis))errors.push('NIS sudah ada di DPT')
-        if(nis&&seen.has(nis))errors.push('NIS duplikat dalam file')
+        if(nis&&existing.has(nis))errors.push('NISN sudah ada di DPT')
+        if(nis&&seen.has(nis))errors.push('NISN duplikat dalam file')
         if(nis)seen.add(nis)
         return {row:i+2,student_number:nis,name,class_name:className,tps:tpsText,polling_station_id:station?.id||null,errors}
       }).filter(r=>r.student_number||r.name||r.class_name||r.tps)
@@ -127,6 +127,27 @@ export default function Voters(){
     await load()
   }
 
+  async function generatePins(){
+    if(!election||!voters.length)return
+    if(!confirm('Generate PIN baru untuk seluruh DPT? PIN lama akan langsung tidak berlaku.'))return
+    setMessage('')
+    const {data,error}=await supabase.rpc('generate_voter_pins',{p_election_id:election.id})
+    if(error){setMessage(error.message);return}
+    const rows=(data||[]).map(r=>({
+      NISN:r.student_number,
+      Nama:r.voter_name,
+      Kelas:r.class_name,
+      TPS:r.station_name||'',
+      PIN:r.pin
+    }))
+    const ws=XLSX.utils.json_to_sheet(rows)
+    const wb=XLSX.utils.book_new()
+    XLSX.utils.book_append_sheet(wb,ws,'PIN Pemilih')
+    XLSX.writeFile(wb,`pin-pemilih-${election.name.replace(/[^a-z0-9]+/gi,'-').toLowerCase()}.xlsx`)
+    setMessage(`${rows.length} PIN baru berhasil dibuat dan diunduh. Simpan file ini dengan aman.`)
+    await load()
+  }
+
   async function remove(id){
     if(!confirm('Hapus pemilih ini dari DPT?'))return
     const {error}=await supabase.from('voters').delete().eq('id',id)
@@ -135,14 +156,14 @@ export default function Voters(){
   }
 
   return <>
-    <header className="page-head"><div><p className="eyebrow">DAFTAR PEMILIH TETAP</p><h1>DPT</h1><p>Impor Excel/CSV dengan validasi sebelum data masuk database.</p></div>{editable&&<div className="actions"><button className="btn" onClick={downloadTemplate}>Unduh Template Excel</button><button className="btn primary" onClick={()=>fileRef.current?.click()}>Pilih File</button><input ref={fileRef} hidden type="file" accept=".xlsx,.xls,.csv" onChange={e=>e.target.files?.[0]&&parseFile(e.target.files[0])}/></div>}</header>
+    <header className="page-head"><div><p className="eyebrow">DAFTAR PEMILIH TETAP</p><h1>DPT</h1><p>Impor DPT, lalu generate PIN unik untuk login pemilih di TPS.</p></div>{editable&&<div className="actions"><button className="btn" onClick={downloadTemplate}>Unduh Template Excel</button><button className="btn" onClick={generatePins}>Generate & Unduh PIN</button><button className="btn primary" onClick={()=>fileRef.current?.click()}>Pilih File</button><input ref={fileRef} hidden type="file" accept=".xlsx,.xls,.csv" onChange={e=>e.target.files?.[0]&&parseFile(e.target.files[0])}/></div>}</header>
 
     {election&&!editable&&<div className="alert bad">DPT dikunci karena status pemilihan: {election.status}.</div>}
 
     {editable&&<section className="card" style={{marginBottom:20}}>
       <h2>Tambah Pemilih Manual</h2>
       <form className="admin-form" onSubmit={addManual}>
-        <input required placeholder="NIS" value={manual.student_number} onChange={e=>setManual({...manual,student_number:e.target.value})}/>
+        <input required placeholder="NISN" value={manual.student_number} onChange={e=>setManual({...manual,student_number:e.target.value})}/>
         <input required placeholder="Nama siswa" value={manual.name} onChange={e=>setManual({...manual,name:e.target.value})}/>
         <input required placeholder="Kelas" value={manual.class_name} onChange={e=>setManual({...manual,class_name:e.target.value})}/>
         <select required value={manual.polling_station_id} onChange={e=>setManual({...manual,polling_station_id:e.target.value})}><option value="">Pilih TPS</option>{stations.map(s=><option key={s.id} value={s.id}>{s.code} - {s.name}</option>)}</select>
@@ -159,8 +180,8 @@ export default function Voters(){
 
     {message&&<p className="form-message">{message}</p>}
 
-    <section className="card"><div className="toolbar"><input value={query} onChange={e=>setQuery(e.target.value)} placeholder="Cari NIS, nama, kelas, atau TPS..."/></div>
-      <div className="table-scroll"><table><thead><tr><th>NIS</th><th>Nama</th><th>Kelas</th><th>TPS</th><th>Status</th>{editable&&<th></th>}</tr></thead><tbody>{filtered.map(v=><tr key={v.id}><td>{v.student_number}</td><td><strong>{v.name}</strong></td><td>{v.class_name}</td><td>{v.polling_stations?.name||'-'}</td><td><span className={v.has_voted?'pill done':'pill pending'}>{v.has_voted?'Sudah':'Belum'}</span></td>{editable&&<td><button className="btn danger" onClick={()=>remove(v.id)}>Hapus</button></td>}</tr>)}</tbody></table></div>
+    <section className="card"><div className="toolbar"><input value={query} onChange={e=>setQuery(e.target.value)} placeholder="Cari NISN, nama, kelas, atau TPS..."/></div>
+      <div className="table-scroll"><table><thead><tr><th>NISN</th><th>Nama</th><th>Kelas</th><th>TPS</th><th>PIN</th><th>Status</th>{editable&&<th></th>}</tr></thead><tbody>{filtered.map(v=><tr key={v.id}><td>{v.student_number}</td><td><strong>{v.name}</strong></td><td>{v.class_name}</td><td>{v.polling_stations?.name||'-'}</td><td><span className={v.pin_issued_at?'pill done':'pill pending'}>{v.pin_issued_at?'Dibuat':'Belum'}</span></td><td><span className={v.has_voted?'pill done':'pill pending'}>{v.has_voted?'Sudah':'Belum'}</span></td>{editable&&<td><button className="btn danger" onClick={()=>remove(v.id)}>Hapus</button></td>}</tr>)}</tbody></table></div>
     </section>
   </>
 }
