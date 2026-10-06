@@ -68,3 +68,11 @@ button:disabled{opacity:.55;cursor:not-allowed}
 .demo-person.right .demo-body{background:#475569}
 .demo-person span{position:absolute;bottom:10px;color:white;font-size:12px;font-weight:900;letter-spacing:.06em}
 .demo-number-badge{position:absolute;top:10px;right:10px;color:white;font-weight:900;font-size:13px;padding:5px 8px;border-radius:999px;background:#2563eb;box-shadow:0 3px 10px rgba(15,23,42,.16)}
+
+.voter-login-card{max-width:560px}
+.tps-login-head{display:flex;justify-content:space-between;gap:16px;align-items:flex-start;margin-bottom:20px}
+.voter-login-form{display:grid;gap:18px}
+.voter-login-form label{display:grid;gap:8px;font-weight:800;color:#334155}
+.voter-login-form .search-lg,.voter-login-form .pin-input{width:100%;box-sizing:border-box}
+.kiosk-note{margin-top:20px;padding:12px 14px;border-radius:12px;background:#f8fafc;color:#475569;font-size:14px;line-height:1.5}
+@media(max-width:640px){.tps-login-head{flex-direction:column}}
