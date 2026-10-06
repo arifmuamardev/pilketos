@@ -35,7 +35,7 @@ export default function Tps(){
 
   const editable=election && ['draft','ready'].includes(election.status)
   return <>
-    <header className="page-head"><div><p className="eyebrow">TEMPAT PEMUNGUTAN SUARA</p><h1>TPS</h1><p>Kelola TPS untuk pemilihan aktif.</p></div></header>
+    <header className="page-head"><div><p className="eyebrow">TEMPAT PEMUNGUTAN SUARA</p><h1>TPS</h1><p>Kelola TPS untuk pemilihan aktif. Laptop TPS menggunakan portal terpisah.</p></div><a className="btn" href="./tps/" target="_blank" rel="noreferrer">Buka Portal TPS</a></header>
     {editable&&<section className="card" style={{marginBottom:20}}>
       <form className="admin-form" onSubmit={add}>
         <input required placeholder="Kode, mis. TPS-01" value={code} onChange={e=>setCode(e.target.value)}/>
@@ -47,7 +47,7 @@ export default function Tps(){
     {election&&!editable&&<div className="alert bad">TPS dikunci karena status pemilihan: {election.status}.</div>}
     <div className="tps-grid">{stations.map(s=><article className="card" key={s.id}>
       <div className="card-head"><div><h2>{s.name}</h2><p>{s.code}</p></div><span className="pill done">Tersedia</span></div>
-      <div className="actions"><a className="btn primary" href={`#/tps/${s.id}`}>Buka TPS</a>{editable&&<button className="btn danger" onClick={()=>remove(s.id)}>Hapus</button>}</div>
+      <div className="actions"><a className="btn primary" href={`./tps/?station=${s.id}`} target="_blank" rel="noreferrer">Buka di Portal TPS</a>{editable&&<button className="btn danger" onClick={()=>remove(s.id)}>Hapus</button>}</div>
     </article>)}</div>
   </>
 }
