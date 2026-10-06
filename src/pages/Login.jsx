@@ -8,7 +8,6 @@ export default function Login() {
   const [mode, setMode] = useState('login')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const [displayName, setDisplayName] = useState('')
   const [message, setMessage] = useState('')
   const [busy, setBusy] = useState(false)
 
@@ -24,9 +23,9 @@ export default function Login() {
         const { data, error } = await supabase.auth.signUp({ email, password })
         if (error) throw error
         if (!data.session) {
-          setMessage('Pendaftaran berhasil. Periksa email untuk verifikasi, lalu login kembali.')
+          setMessage('Pendaftaran berhasil. Periksa email untuk verifikasi, lalu login kembali. Setelah itu admin perlu memberi Anda role.')
         } else {
-          setMessage('Akun berhasil dibuat. Jika ini instalasi pertama, jadikan akun sebagai admin pertama.')
+          setMessage('Akun berhasil dibuat. Admin perlu memberi role sebelum akun dapat menggunakan aplikasi.')
           await refresh()
         }
       } else {
@@ -41,34 +40,14 @@ export default function Login() {
     }
   }
 
-  async function bootstrap() {
-    setBusy(true)
-    setMessage('')
-    try {
-      const { error } = await supabase.rpc('bootstrap_first_admin', {
-        p_display_name: displayName || user?.email?.split('@')[0] || 'Administrator'
-      })
-      if (error) throw error
-      await refresh()
-      setMessage('Admin pertama berhasil dibuat.')
-    } catch (err) {
-      setMessage(err.message)
-    } finally {
-      setBusy(false)
-    }
-  }
-
   if (user && !profile) {
     return <div className="landing"><div className="landing-card">
       <p className="eyebrow">AKUN SUDAH LOGIN</p>
-      <h1>Belum memiliki role Pilketos</h1>
-      <p>Jika ini akun pertama pada sistem, Anda dapat menjadikannya administrator pertama. Jika bukan, minta admin memberi role ke akun ini.</p>
-      <input className="search-lg" value={displayName} onChange={e=>setDisplayName(e.target.value)} placeholder="Nama admin" />
+      <h1>Belum memiliki akses Pilketos</h1>
+      <p>Akun Anda sudah terdaftar, tetapi belum diberi role. Hubungi administrator Pilketos untuk menetapkan akses Admin atau Petugas TPS.</p>
       <div className="landing-actions">
-        <button className="btn primary lg" disabled={busy} onClick={bootstrap}>Jadikan Admin Pertama</button>
         <button className="btn lg" onClick={()=>supabase.auth.signOut()}>Keluar</button>
       </div>
-      {message && <p className="form-message">{message}</p>}
     </div></div>
   }
 
