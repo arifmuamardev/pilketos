@@ -35,10 +35,10 @@ export default function Vote(){
   }
 
   if(!token&&!done){
-    return <div className="vote-page"><div className="success blocked"><div>!</div><h1>Bilik belum diaktifkan</h1><p>Silakan panggil petugas TPS untuk mengaktifkan sesi pemilih.</p>{returnTps&&<a href={`#/tps/${returnTps}`} className="btn primary">Panggil Petugas</a>}</div></div>
+    return <div className="vote-page"><div className="success blocked"><div>!</div><h1>Bilik belum diaktifkan</h1><p>Sesi pemilih belum aktif.</p>{returnTps&&<a href={`#/tps/${returnTps}`} className="btn primary">Kembali ke TPS</a>}</div></div>
   }
 
-  if(done) return <div className="vote-page"><div className="success"><div>✓</div><h1>Suara berhasil disimpan</h1><p>Terima kasih telah menggunakan hak pilih Anda. Silakan panggil petugas.</p>{returnTps&&<a href={`#/tps/${returnTps}`} className="btn primary">Panggil Petugas</a>}</div></div>
+  if(done) return <div className="vote-page"><div className="success"><div>✓</div><h1>Suara berhasil disimpan</h1><p>Terima kasih. Pemungutan suara untuk pemilih ini telah selesai.</p>{returnTps&&<a href={`#/tps/${returnTps}`} className="btn primary lg">Selesai</a>}</div></div>
 
   return <div className="vote-page">
     <header className="vote-head"><p>{election?.name||'PILKETOS'}</p><h1>Pilih Ketua & Wakil Ketua OSIS</h1><span>Pilih satu pasangan calon, lalu konfirmasi.</span></header>
