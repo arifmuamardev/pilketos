@@ -3,10 +3,12 @@ import { useAuth } from '../context/AuthContext'
 
 const items = [
   ['/admin', 'Dashboard'],
+  ['/admin/election', 'Pemilihan'],
   ['/admin/candidates', 'Kandidat'],
   ['/admin/voters', 'DPT'],
   ['/admin/tps', 'TPS'],
   ['/admin/results', 'Hasil'],
+  ['/admin/staff', 'Petugas'],
 ]
 
 export default function Shell() {
