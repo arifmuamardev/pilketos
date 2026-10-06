@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { supabase } from '../lib/supabase'
+import DemoCandidateIllustration from '../components/DemoCandidateIllustration'
 
 export default function Vote(){
   const [election,setElection]=useState(null)
@@ -14,7 +15,7 @@ export default function Vote(){
   useEffect(()=>{if(token)load()},[])
 
   async function load(){
-    const {data:e,error:eErr}=await supabase.from('elections').select('id,name,status,allow_blank_vote').eq('status','open').limit(1).maybeSingle()
+    const {data:e,error:eErr}=await supabase.from('elections').select('id,name,status,allow_blank_vote,is_demo').eq('status','open').limit(1).maybeSingle()
     if(eErr){setMessage(eErr.message);return}
     setElection(e)
     if(!e){setMessage('Tidak ada pemungutan suara yang sedang dibuka.');return}
@@ -42,7 +43,7 @@ export default function Vote(){
   return <div className="vote-page">
     <header className="vote-head"><p>{election?.name||'PILKETOS'}</p><h1>Pilih Ketua & Wakil Ketua OSIS</h1><span>Pilih satu pasangan calon, lalu konfirmasi.</span></header>
     {message&&<div className="alert bad" style={{maxWidth:900,margin:'0 auto 20px'}}>{message}</div>}
-    <div className="ballot">{candidates.map(c=><button key={c.id} className={choice===c.id?'ballot-card selected':'ballot-card'} onClick={()=>setChoice(c.id)}><b>{String(c.ballot_number).padStart(2,'0')}</b><div className="photo-placeholder">{c.photo_url?<img src={c.photo_url} alt="" style={{width:'100%',height:'100%',objectFit:'cover',borderRadius:12}}/>:'Foto Paslon'}</div><h2>{c.chair_name}</h2><h3>& {c.vice_name}</h3><span>{choice===c.id?'✓ Dipilih':'Pilih Pasangan Ini'}</span></button>)}</div>
+    <div className="ballot">{candidates.map(c=><button key={c.id} className={choice===c.id?'ballot-card selected':'ballot-card'} onClick={()=>setChoice(c.id)}><b>{String(c.ballot_number).padStart(2,'0')}</b><div className="photo-placeholder">{c.photo_url?<img src={c.photo_url} alt="" style={{width:'100%',height:'100%',objectFit:'cover',borderRadius:12}}/>:election?.is_demo?<DemoCandidateIllustration chairName={c.chair_name} viceName={c.vice_name} number={c.ballot_number}/>: 'Foto Paslon'}</div><h2>{c.chair_name}</h2><h3>& {c.vice_name}</h3><span>{choice===c.id?'✓ Dipilih':'Pilih Pasangan Ini'}</span></button>)}</div>
     {choice&&<div className="confirm-bar"><div><small>Pilihan Anda</small><strong>Pasangan Nomor {String(candidates.find(c=>c.id===choice)?.ballot_number||'').padStart(2,'0')}</strong></div><button className="btn primary lg" disabled={busy} onClick={submitVote}>{busy?'Menyimpan...':'Konfirmasi & Kirim Suara'}</button></div>}
   </div>
 }
