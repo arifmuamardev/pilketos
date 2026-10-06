@@ -20,6 +20,7 @@ export default function TpsPortal(){
   const [nisn,setNisn]=useState('')
   const [pin,setPin]=useState('')
   const [voteToken,setVoteToken]=useState('')
+  const [pendingVoter,setPendingVoter]=useState(null)
   const [election,setElection]=useState(null)
   const [candidates,setCandidates]=useState([])
   const [choice,setChoice]=useState(null)
@@ -73,7 +74,7 @@ export default function TpsPortal(){
     e.preventDefault()
     if(!stationId||!nisn.trim()||pin.length!==6)return
     setBusy(true);setMessage('')
-    const {data,error}=await supabase.rpc('student_login',{
+    const {data,error}=await supabase.rpc('student_authenticate',{
       p_polling_station_id:stationId,
       p_student_number:nisn.trim(),
       p_pin:pin
@@ -85,26 +86,13 @@ export default function TpsPortal(){
       return
     }
 
-    const {data:el,error:eErr}=await supabase.from('elections')
-      .select('id,name,status,is_demo')
-      .eq('id',station.election_id)
-      .eq('status','open')
-      .maybeSingle()
-    if(eErr||!el){
-      setMessage(eErr?.message||'Pemungutan suara tidak sedang dibuka.')
-      setBusy(false)
-      return
-    }
-
-    const {data:c,error:cErr}=await supabase.from('candidates')
-      .select('id,ballot_number,chair_name,vice_name,chair_class,vice_class,vision,photo_url')
-      .eq('election_id',el.id)
-      .order('ballot_number')
-    if(cErr){setMessage(cErr.message);setBusy(false);return}
-
-    setVoteToken(data)
-    setElection(el)
-    setCandidates(c||[])
+    setVoteToken(data.token)
+    setPendingVoter({
+      student_number:data.student_number,
+      name:data.name,
+      class_name:data.class_name,
+      station_name:data.station_name
+    })
     setChoice(null)
     setNisn('')
     setPin('')
