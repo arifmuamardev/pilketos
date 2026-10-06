@@ -76,3 +76,15 @@ button:disabled{opacity:.55;cursor:not-allowed}
 .voter-login-form .search-lg,.voter-login-form .pin-input{width:100%;box-sizing:border-box}
 .kiosk-note{margin-top:20px;padding:12px 14px;border-radius:12px;background:#f8fafc;color:#475569;font-size:14px;line-height:1.5}
 @media(max-width:640px){.tps-login-head{flex-direction:column}}
+
+.tps-portal-shell{min-height:100vh;background:#f1f5f9;display:grid;place-items:center;padding:28px;box-sizing:border-box}
+.tps-portal-shell .kiosk-card{width:min(100%,980px)}
+.tps-portal-shell .auth-card{width:min(100%,560px)}
+.tps-select-card{cursor:pointer;text-align:left;border:1px solid #e2e8f0;background:white}
+.tps-select-card:hover{border-color:#93c5fd;transform:translateY(-1px)}
+.tps-select-card strong{display:block;font-size:18px;color:#0f172a}
+.tps-select-card span{display:block;margin-top:4px;color:#64748b}
+.tps-device-foot{display:flex;gap:12px;align-items:center;justify-content:flex-end;flex-wrap:wrap;margin-top:18px;padding-top:14px;border-top:1px solid #e2e8f0}
+.tps-device-foot small{margin-right:auto;color:#64748b}
+.tps-success{max-width:560px;background:white;border-radius:20px;padding:44px 32px;box-shadow:0 18px 50px rgba(15,23,42,.08);text-align:center}
+.tps-vote-embedded{min-height:100vh}
