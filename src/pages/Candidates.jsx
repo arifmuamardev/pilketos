@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { supabase } from '../lib/supabase'
+import DemoCandidateIllustration from '../components/DemoCandidateIllustration'
 
 const emptyForm={ballot_number:'',chair_name:'',vice_name:'',chair_class:'',vice_class:'',vision:'',mission:'',photo_url:''}
 
@@ -87,7 +88,7 @@ export default function Candidates(){
     </section>}
     <div className="candidate-grid">{candidates.map(c=><article className="candidate-card" key={c.id}>
       <div className="candidate-number">{String(c.ballot_number).padStart(2,'0')}</div>
-      <div className="photo-placeholder">{c.photo_url?<img src={c.photo_url} alt="" style={{width:'100%',height:'100%',objectFit:'cover',borderRadius:12}}/>:'Foto Paslon'}</div>
+      <div className="photo-placeholder">{c.photo_url?<img src={c.photo_url} alt="" style={{width:'100%',height:'100%',objectFit:'cover',borderRadius:12}}/>:election?.is_demo?<DemoCandidateIllustration chairName={c.chair_name} viceName={c.vice_name} number={c.ballot_number}/>: 'Foto Paslon'}</div>
       <h3>{c.chair_name}<br/><span>& {c.vice_name}</span></h3>
       <p>{[c.chair_class,c.vice_class].filter(Boolean).join(' / ')}</p>
       <blockquote>{c.vision || 'Visi belum diisi.'}</blockquote>
