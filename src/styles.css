@@ -55,3 +55,8 @@ button:disabled{opacity:.55;cursor:not-allowed}
 .setup-roadmap span{display:grid;gap:6px;color:#64748b;font-size:12px;font-weight:700}
 .setup-roadmap b{width:30px;height:30px;border-radius:50%;background:#eff6ff;color:#2563eb;display:grid;place-items:center;margin:auto}
 @media(max-width:700px){.setup-roadmap{grid-template-columns:1fr}.empty-dashboard{margin-top:30px;padding:28px 20px}}
+
+.demo-panel{display:flex;justify-content:space-between;gap:18px;align-items:center;background:#fff7ed;border:1px solid #fed7aa;border-radius:16px;padding:16px 18px;margin-bottom:20px}
+.demo-panel p{margin:4px 0 0;color:#9a3412}
+.demo-badge{display:inline-flex;align-items:center;gap:8px;background:#ffedd5;color:#9a3412;border:1px solid #fdba74;border-radius:999px;padding:7px 11px;font-size:12px;font-weight:900;letter-spacing:.04em;margin-bottom:14px}
+@media(max-width:900px){.demo-panel{align-items:flex-start;flex-direction:column}}
