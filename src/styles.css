@@ -21,3 +21,12 @@
 .error-text{color:#b91c1c;font-size:12px;font-weight:700}
 button:disabled{opacity:.55;cursor:not-allowed}
 @media(max-width:900px){.form-grid{grid-template-columns:1fr}}
+
+.state-chip{display:inline-flex;padding:7px 10px;border-radius:999px;background:#e2e8f0;color:#475569;font-size:12px;font-weight:800;text-transform:uppercase}
+.state-chip.active{background:#2563eb;color:white}
+.recon{display:grid;grid-template-columns:2fr 1fr 1fr 1.5fr;gap:12px;align-items:center;border-radius:14px;padding:16px 18px;margin-bottom:20px}
+.recon.good{background:#ecfdf5;border:1px solid #bbf7d0;color:#166534}
+.recon.bad{background:#fef2f2;border:1px solid #fecaca;color:#991b1b}
+.recon div{display:grid;gap:3px}
+.recon span{font-size:12px;opacity:.8}
+@media(max-width:900px){.recon{grid-template-columns:1fr 1fr}}
