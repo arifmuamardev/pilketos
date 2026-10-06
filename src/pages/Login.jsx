@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Navigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../context/AuthContext'
@@ -11,8 +11,12 @@ export default function Login() {
   const [message, setMessage] = useState('')
   const [busy, setBusy] = useState(false)
 
+  useEffect(()=>{
+    if (!loading && profile?.role === 'officer') window.location.replace('./tps/')
+  },[loading,profile])
+
   if (!loading && profile?.role === 'admin') return <Navigate to="/admin" replace />
-  if (!loading && profile?.role === 'officer') return <Navigate to={`/tps/${profile.polling_station_id || ''}`} replace />
+  if (!loading && profile?.role === 'officer') return <div className="landing"><div className="landing-card"><p>Mengarahkan ke Portal TPS...</p></div></div>
 
   async function submit(e) {
     e.preventDefault()
