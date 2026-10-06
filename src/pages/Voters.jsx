@@ -102,8 +102,11 @@ export default function Voters(){
       name:r.name,
       class_name:r.class_name
     }))
-    const {error}=await supabase.from('voters').insert(payload)
-    if(error){setMessage(error.message);return}
+    for(let i=0;i<payload.length;i+=500){
+      const chunk=payload.slice(i,i+500)
+      const {error}=await supabase.from('voters').insert(chunk)
+      if(error){setMessage(`Impor berhenti pada baris ${i+1}-${i+chunk.length}: ${error.message}`);await load();return}
+    }
     setMessage(`${payload.length} pemilih berhasil diimpor.`)
     setPreview([])
     if(fileRef.current)fileRef.current.value=''
