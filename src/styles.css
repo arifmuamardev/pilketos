@@ -30,3 +30,19 @@ button:disabled{opacity:.55;cursor:not-allowed}
 .recon div{display:grid;gap:3px}
 .recon span{font-size:12px;opacity:.8}
 @media(max-width:900px){.recon{grid-template-columns:1fr 1fr}}
+
+.setup-list{display:grid;gap:10px;margin-top:16px}
+.setup-item{display:grid;grid-template-columns:38px 1fr auto;gap:12px;align-items:center;border:1px solid #e2e8f0;border-radius:12px;padding:13px 14px;background:#fff}
+.setup-item.done{background:#f0fdf4;border-color:#bbf7d0}
+.setup-icon{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:#fef3c7;color:#92400e;font-weight:900}
+.setup-item.done .setup-icon{background:#dcfce7;color:#166534}
+.setup-item strong,.setup-item small{display:block}
+.setup-item small{color:#64748b;margin-top:3px}
+.setup-link{font-size:12px;font-weight:800;color:#2563eb}
+.pin-setup{display:grid;grid-template-columns:1fr 130px auto;gap:10px;align-items:center;padding:14px;border:1px solid #bfdbfe;background:#eff6ff;border-radius:12px;margin:18px 0}
+.pin-setup strong,.pin-setup small{display:block}
+.pin-setup small{margin-top:3px;color:#64748b}
+.pin-setup input,.pin-input{border:1px solid #cbd5e1;border-radius:10px;padding:12px;text-align:center;font-size:20px;letter-spacing:.25em}
+.pin-input{width:100%;margin:18px 0}
+.success.blocked>div{background:#fef3c7;color:#92400e}
+@media(max-width:900px){.pin-setup{grid-template-columns:1fr}.setup-item{grid-template-columns:38px 1fr}.setup-link{grid-column:2}}
