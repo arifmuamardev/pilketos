@@ -88,3 +88,10 @@ button:disabled{opacity:.55;cursor:not-allowed}
 .tps-device-foot small{margin-right:auto;color:#64748b}
 .tps-success{max-width:560px;background:white;border-radius:20px;padding:44px 32px;box-shadow:0 18px 50px rgba(15,23,42,.08);text-align:center}
 .tps-vote-embedded{min-height:100vh}
+
+.identity-confirm-card{max-width:620px}
+.identity-summary{display:grid;gap:12px;margin:24px 0}
+.identity-summary>div{display:grid;gap:4px;padding:14px 16px;border:1px solid #e2e8f0;border-radius:12px;background:#f8fafc;text-align:left}
+.identity-summary span{font-size:12px;font-weight:800;color:#64748b;text-transform:uppercase;letter-spacing:.04em}
+.identity-summary strong{font-size:18px;color:#0f172a}
+.identity-confirm-card .btn+.btn{margin-top:10px}
