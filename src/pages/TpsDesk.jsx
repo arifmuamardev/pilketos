@@ -72,7 +72,7 @@ export default function TpsDesk(){
     return <div className="kiosk-wrap"><form className="kiosk-card auth-card" onSubmit={unlock}>
       <p className="eyebrow">{station?.name||'TPS'} • TERKUNCI</p>
       <h1>Masukkan PIN Petugas</h1>
-      <p>Bilik sudah selesai digunakan. Hanya petugas yang dapat kembali ke mode verifikasi.</p>
+      <p>Sesi pemilih selesai. Masukkan PIN petugas untuk memproses pemilih berikutnya.</p>
       <input className="pin-input" inputMode="numeric" pattern="[0-9]{4,6}" minLength="4" maxLength="6" required value={pin} onChange={e=>setPin(e.target.value.replace(/\D/g,''))} placeholder="••••"/>
       <button className="btn primary lg full" disabled={busy}>{busy?'Memeriksa...':'Buka Mode Petugas'}</button>
       {message&&<p className="form-message">{message}</p>}
@@ -84,7 +84,7 @@ export default function TpsDesk(){
     <p>Login sebagai {profile?.display_name}. Cari siswa berdasarkan NIS atau nama.</p>
 
     {hasPin===false&&<form className="pin-setup" onSubmit={savePin}>
-      <div><strong>Buat PIN Petugas</strong><small>PIN 4–6 digit dipakai untuk membuka kembali mode petugas setelah siswa selesai voting.</small></div>
+      <div><strong>Buat PIN Petugas</strong><small>PIN 4–6 digit dipakai untuk membuka mode petugas setelah satu sesi pemilih selesai.</small></div>
       <input inputMode="numeric" pattern="[0-9]{4,6}" minLength="4" maxLength="6" required value={pin} onChange={e=>setPin(e.target.value.replace(/\D/g,''))} placeholder="PIN"/>
       <button className="btn primary" disabled={busy}>Simpan PIN</button>
     </form>}
