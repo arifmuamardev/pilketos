@@ -99,6 +99,40 @@ export default function TpsPortal(){
     setBusy(false)
   }
 
+  async function confirmIdentity(){
+    if(!voteToken||!station)return
+    setBusy(true);setMessage('')
+    const {data:el,error:eErr}=await supabase.from('elections')
+      .select('id,name,status,is_demo')
+      .eq('id',station.election_id)
+      .eq('status','open')
+      .maybeSingle()
+    if(eErr||!el){setMessage(eErr?.message||'Pemungutan suara tidak sedang dibuka.');setBusy(false);return}
+
+    const {data:c,error:cErr}=await supabase.from('candidates')
+      .select('id,ballot_number,chair_name,vice_name,chair_class,vice_class,vision,photo_url')
+      .eq('election_id',el.id)
+      .order('ballot_number')
+    if(cErr){setMessage(cErr.message);setBusy(false);return}
+
+    setElection(el)
+    setCandidates(c||[])
+    setPendingVoter(null)
+    setBusy(false)
+  }
+
+  async function reportMismatch(){
+    if(voteToken){
+      await supabase.rpc('cancel_student_session',{p_token:voteToken})
+    }
+    setVoteToken('')
+    setPendingVoter(null)
+    setElection(null)
+    setCandidates([])
+    setChoice(null)
+    setMessage('Data tidak sesuai. Silakan lapor kepada petugas TPS sebelum melanjutkan.')
+  }
+
   async function submitVote(){
     if(!voteToken||!choice)return
     setBusy(true);setMessage('')
@@ -117,6 +151,7 @@ export default function TpsPortal(){
 
   function nextVoter(){
     setDone(false)
+    setPendingVoter(null)
     setElection(null)
     setCandidates([])
     setChoice(null)
@@ -127,7 +162,7 @@ export default function TpsPortal(){
 
   async function logout(){
     await signOut()
-    setStation(null);setStationId('');setStations([]);setDone(false);setVoteToken('')
+    setStation(null);setStationId('');setStations([]);setDone(false);setVoteToken('');setPendingVoter(null)
   }
 
   const selectedCandidate=useMemo(
@@ -186,6 +221,31 @@ export default function TpsPortal(){
       {!stations.length&&<div className="alert bad">Belum ada TPS pada pemilihan terbaru.</div>}
       {message&&<div className="alert bad">{message}</div>}
     </div></div>
+  }
+
+  if(pendingVoter){
+    return <div className="tps-portal-shell">
+      <div className="kiosk-card auth-card identity-confirm-card">
+        <p className="eyebrow">{station?.code||'TPS'} • KONFIRMASI IDENTITAS</p>
+        <h1>Apakah data ini benar?</h1>
+        <p>Pastikan data berikut adalah data Anda sebelum masuk ke bilik suara.</p>
+
+        <div className="identity-summary">
+          <div><span>Nama</span><strong>{pendingVoter.name}</strong></div>
+          <div><span>NISN</span><strong>{pendingVoter.student_number}</strong></div>
+          <div><span>Kelas</span><strong>{pendingVoter.class_name}</strong></div>
+          <div><span>TPS</span><strong>{pendingVoter.station_name||station?.name||'-'}</strong></div>
+        </div>
+
+        <button className="btn primary lg full" disabled={busy} onClick={confirmIdentity}>
+          {busy?'Memuat bilik...':'Ya, Ini Saya'}
+        </button>
+        <button className="btn danger lg full" disabled={busy} onClick={reportMismatch}>
+          Data Tidak Sesuai — Lapor Petugas
+        </button>
+        {message&&<div className="alert bad">{message}</div>}
+      </div>
+    </div>
   }
 
   if(done){
