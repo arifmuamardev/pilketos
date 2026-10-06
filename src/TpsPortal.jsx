@@ -227,8 +227,8 @@ export default function TpsPortal(){
     return <div className="tps-portal-shell">
       <div className="kiosk-card auth-card identity-confirm-card">
         <p className="eyebrow">{station?.code||'TPS'} • KONFIRMASI IDENTITAS</p>
-        <h1>Apakah data ini benar?</h1>
-        <p>Pastikan data berikut adalah data Anda sebelum masuk ke bilik suara.</p>
+        <h1>Cek data kamu</h1>
+        <p>Pastikan nama dan data di bawah ini benar sebelum memilih.</p>
 
         <div className="identity-summary">
           <div><span>Nama</span><strong>{pendingVoter.name}</strong></div>
@@ -238,10 +238,10 @@ export default function TpsPortal(){
         </div>
 
         <button className="btn primary lg full" disabled={busy} onClick={confirmIdentity}>
-          {busy?'Memuat bilik...':'Ya, Ini Saya'}
+          {busy?'Memuat bilik...':'Ya, Data Saya Benar'}
         </button>
         <button className="btn danger lg full" disabled={busy} onClick={reportMismatch}>
-          Data Tidak Sesuai — Lapor Petugas
+          Bukan Data Saya — Lapor Petugas
         </button>
         {message&&<div className="alert bad">{message}</div>}
       </div>
@@ -251,9 +251,9 @@ export default function TpsPortal(){
   if(done){
     return <div className="tps-portal-shell"><div className="success tps-success">
       <div>✓</div>
-      <h1>Suara berhasil disimpan</h1>
-      <p>Terima kasih. Sesi pemilih telah selesai.</p>
-      <button className="btn primary lg" onClick={nextVoter}>Pemilih Berikutnya</button>
+      <h1>Suaramu sudah tersimpan</h1>
+      <p>Terima kasih sudah memilih. Tekan tombol di bawah agar layar siap untuk pemilih berikutnya.</p>
+      <button className="btn primary lg" onClick={nextVoter}>Selesai</button>
     </div></div>
   }
 
@@ -262,18 +262,41 @@ export default function TpsPortal(){
       <header className="vote-head">
         <p>{election?.name||'PILKETOS'} • {station?.code}</p>
         <h1>Pilih Ketua & Wakil Ketua OSIS</h1>
-        <span>Pilih satu pasangan calon, lalu konfirmasi.</span>
+        <span>Ketuk satu pasangan calon yang kamu pilih.</span>
       </header>
       {message&&<div className="alert bad" style={{maxWidth:900,margin:'0 auto 20px'}}>{message}</div>}
       <div className="ballot">{candidates.map(c=><button key={c.id} className={choice===c.id?'ballot-card selected':'ballot-card'} onClick={()=>setChoice(c.id)}>
         <b>{String(c.ballot_number).padStart(2,'0')}</b>
         <div className="photo-placeholder">{c.photo_url?<img src={c.photo_url} alt="" style={{width:'100%',height:'100%',objectFit:'cover',borderRadius:12}}/>:election?.is_demo?<DemoCandidateIllustration chairName={c.chair_name} viceName={c.vice_name} number={c.ballot_number}/>: 'Foto Paslon'}</div>
         <h2>{c.chair_name}</h2><h3>& {c.vice_name}</h3>
-        <span>{choice===c.id?'✓ Dipilih':'Pilih Pasangan Ini'}</span>
+        <span>{choice===c.id?'✓ Pilihanmu':'Pilih Pasangan Ini'}</span>
       </button>)}</div>
-      {choice&&<div className="confirm-bar">
-        <div><small>Pilihan Anda</small><strong>Pasangan Nomor {String(selectedCandidate?.ballot_number||'').padStart(2,'0')}</strong></div>
-        <button className="btn primary lg" disabled={busy} onClick={submitVote}>{busy?'Menyimpan...':'Konfirmasi & Kirim Suara'}</button>
+      {choice&&<div className="vote-confirm-overlay" role="dialog" aria-modal="true" aria-labelledby="vote-confirm-title">
+        <div className="vote-confirm-modal">
+          <span className="vote-confirm-step">LANGKAH TERAKHIR</span>
+          <h2 id="vote-confirm-title">Yakin dengan pilihanmu?</h2>
+          <p className="vote-confirm-intro">Kamu memilih</p>
+
+          <div className="vote-confirm-choice">
+            <div className="vote-confirm-number">{String(selectedCandidate?.ballot_number||'').padStart(2,'0')}</div>
+            <div className="vote-confirm-names">
+              <strong>{selectedCandidate?.chair_name}</strong>
+              <span>& {selectedCandidate?.vice_name}</span>
+            </div>
+          </div>
+
+          <div className="vote-confirm-warning">
+            <strong>Pastikan pilihanmu sudah benar.</strong>
+            <span>Setelah suara dikirim, pilihan tidak dapat diubah lagi.</span>
+          </div>
+
+          <div className="vote-confirm-privacy">🔒 Suaramu bersifat rahasia.</div>
+
+          <div className="vote-confirm-actions">
+            <button className="btn lg" disabled={busy} onClick={()=>setChoice(null)}>Ganti Pilihan</button>
+            <button className="btn primary lg" disabled={busy} onClick={submitVote}>{busy?'Mengirim suara...':'Ya, Kirim Suara Saya'}</button>
+          </div>
+        </div>
       </div>}
     </div>
   }
@@ -283,8 +306,8 @@ export default function TpsPortal(){
       <div className="tps-login-head">
         <div>
           <p className="eyebrow">{station?.code||'TPS'} • {station?.name||'LOADING'}</p>
-          <h1>Login Pemilih</h1>
-          <p>Masukkan NISN dan PIN 6 digit yang diberikan panitia.</p>
+          <h1>Masuk untuk Memilih</h1>
+          <p>Masukkan NISN dan PIN 6 digit yang kamu terima dari panitia.</p>
         </div>
         <span className="pill done">{stats.voted} / {stats.total}</span>
       </div>
@@ -292,13 +315,13 @@ export default function TpsPortal(){
       <form onSubmit={studentLogin} className="voter-login-form">
         <label>NISN
           <input className="search-lg" inputMode="numeric" autoComplete="off" required value={nisn}
-            onChange={e=>setNisn(e.target.value.replace(/\D/g,''))} placeholder="Masukkan NISN" autoFocus/>
+            onChange={e=>setNisn(e.target.value.replace(/\D/g,''))} placeholder="Contoh: 90001" autoFocus/>
         </label>
         <label>PIN Pemilih
           <input className="pin-input" inputMode="numeric" autoComplete="one-time-code" pattern="[0-9]{6}" minLength="6" maxLength="6"
             required value={pin} onChange={e=>setPin(e.target.value.replace(/\D/g,''))} placeholder="••••••"/>
         </label>
-        <button className="btn primary lg full" disabled={busy||pin.length!==6}>{busy?'Memverifikasi...':'Masuk ke Bilik Suara'}</button>
+        <button className="btn primary lg full" disabled={busy||pin.length!==6}>{busy?'Memeriksa data...':'Lanjutkan'}</button>
       </form>
 
       {message&&<div className="alert bad">{message}</div>}
