@@ -159,7 +159,7 @@ export default function Voters(){
   return <>
     <header className="page-head"><div><p className="eyebrow">DAFTAR PEMILIH TETAP</p><h1>DPT</h1><p>Impor DPT, lalu generate PIN unik untuk login pemilih di TPS.</p></div><div className="actions">{editable&&<button className="btn" onClick={downloadTemplate}>Unduh Template Excel</button>}{canGeneratePins&&<button className="btn" onClick={generatePins}>Generate & Unduh PIN</button>}{editable&&<><button className="btn primary" onClick={()=>fileRef.current?.click()}>Pilih File</button><input ref={fileRef} hidden type="file" accept=".xlsx,.xls,.csv" onChange={e=>e.target.files?.[0]&&parseFile(e.target.files[0])}/></>}</div></header>
 
-    {election&&!editable&&<div className="alert bad">DPT dikunci karena status pemilihan: {election.status}.</div>}
+    {election&&!editable&&<div className="alert bad">DPT tidak dapat diubah karena status pemilihan: {election.status}.{election.is_demo&&election.status==='open'?' Khusus mode demo, PIN pemilih masih dapat digenerate.':''}</div>}
 
     {editable&&<section className="card" style={{marginBottom:20}}>
       <h2>Tambah Pemilih Manual</h2>
