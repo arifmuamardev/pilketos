@@ -9,6 +9,8 @@ import Candidates from './pages/Candidates'
 import Voters from './pages/Voters'
 import Tps from './pages/Tps'
 import Results from './pages/Results'
+import Staff from './pages/Staff'
+import ElectionSetup from './pages/ElectionSetup'
 import TpsDesk from './pages/TpsDesk'
 import Vote from './pages/Vote'
 
@@ -22,6 +24,8 @@ export default function App(){
       <Route path="voters" element={<Voters/>}/>
       <Route path="tps" element={<Tps/>}/>
       <Route path="results" element={<Results/>}/>
+      <Route path="staff" element={<Staff/>}/>
+      <Route path="election" element={<ElectionSetup/>}/>
     </Route>
     <Route path="/tps/:id" element={<RequireAuth roles={['admin','officer']}><TpsDesk/></RequireAuth>}/>
     <Route path="/vote" element={<Vote/>}/>
