@@ -25,8 +25,28 @@ export default function Dashboard(){
     setStations(t||[])
   }
 
+  if(!election){
+    return <>
+      <header className="page-head"><div><p className="eyebrow">PILKETOS</p><h1>Dashboard Panitia</h1><p>Selamat datang. Sistem siap dikonfigurasi untuk pemilihan pertama.</p></div><span className="status live">● Belum ada pemilihan</span></header>
+      {message&&<p className="form-message">{message}</p>}
+      <section className="empty-dashboard">
+        <div className="empty-icon">✓</div>
+        <h2>Admin berhasil terhubung</h2>
+        <p>Mulai dengan membuat pemilihan, lalu siapkan TPS, kandidat, DPT, dan akun petugas sebelum membuka pemungutan suara.</p>
+        <a className="btn primary lg" href="#/admin/election">Mulai Setup Pilketos</a>
+        <div className="setup-roadmap">
+          <span><b>1</b>Pemilihan</span>
+          <span><b>2</b>TPS</span>
+          <span><b>3</b>Kandidat</span>
+          <span><b>4</b>DPT</span>
+          <span><b>5</b>Petugas</span>
+        </div>
+      </section>
+    </>
+  }
+
   return <>
-    <header className="page-head"><div><p className="eyebrow">{election?.name || 'PILKETOS'}</p><h1>Dashboard Panitia</h1><p>Monitoring partisipasi tanpa menampilkan perolehan suara sementara.</p></div><span className="status live">● {election?.status || 'belum ada pemilihan'}</span></header>
+    <header className="page-head"><div><p className="eyebrow">{election.name}</p><h1>Dashboard Panitia</h1><p>Monitoring partisipasi tanpa menampilkan perolehan suara sementara.</p></div><span className="status live">● {election.status}</span></header>
     {message&&<p className="form-message">{message}</p>}
     <section className="stats">
       <article><span>Total DPT</span><strong>{stats?.total_voters ?? 0}</strong></article>
