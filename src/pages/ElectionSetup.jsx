@@ -113,9 +113,10 @@ export default function ElectionSetup(){
           {['draft','ready','open','closed','published','archived'].map(s=><span key={s} className={election.status===s?'state-chip active':'state-chip'}>{s}</span>)}
         </div>
         <p>Status saat ini: <strong>{election.status}</strong></p>
-        <p className="muted">Alur: draft → ready → open → closed → published → archived.</p>
+        <p className="muted">Alur: draft → ready → open → closed → published → archived.{election.is_demo?' Mode demo boleh dibuka kembali dari closed tanpa mempublikasikan hasil.':''}</p>
         <div className="actions">
           {election.status==='ready'&&<button className="btn" onClick={()=>updateStatus('draft')}>Kembali ke Draft</button>}
+          {election.is_demo&&election.status==='closed'&&<button className="btn" onClick={()=>updateStatus('open')}>Buka Kembali (Demo)</button>}
           {action&&<button
             className={action.status==='closed'?'btn danger':'btn primary'}
             disabled={(action.status==='ready'&&!readyForReady)||(action.status==='open'&&!readyForOpen)}
