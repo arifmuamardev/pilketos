@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { supabase } from '../lib/supabase'
 import DemoCandidateIllustration from '../components/DemoCandidateIllustration'
+import DemoCandidateIllustration from '../components/DemoCandidateIllustration'
 
 const emptyForm={ballot_number:'',chair_name:'',vice_name:'',chair_class:'',vice_class:'',vision:'',mission:'',photo_url:''}
 
