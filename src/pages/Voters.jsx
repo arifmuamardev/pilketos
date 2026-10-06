@@ -38,6 +38,7 @@ export default function Voters(){
   }
 
   const editable=election&&['draft','ready'].includes(election.status)
+  const canGeneratePins=election&&voters.length>0&&(editable||(election.is_demo&&election.status==='open'))
   const filtered=voters.filter(v=>(v.student_number+' '+v.name+' '+v.class_name+' '+(v.polling_stations?.name||'')).toLowerCase().includes(query.toLowerCase()))
 
   const stationMap=useMemo(()=>{
