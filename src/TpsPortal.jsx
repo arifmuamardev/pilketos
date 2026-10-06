@@ -255,9 +255,7 @@ export default function TpsPortal(){
 
       {message&&<div className="alert bad">{message}</div>}
       <div className="tps-device-foot">
-        <small>Perangkat TPS: {profile.display_name}</small>
-        {profile.role==='admin'&&<button className="text-button" onClick={()=>{setStationId('');setStation(null)}}>Ganti TPS</button>}
-        <button className="text-button" onClick={logout}>Keluar Petugas</button>
+        <small>Perangkat TPS aktif • {station?.code||'TPS'}</small>
       </div>
     </div>
   </div>
