@@ -14,6 +14,7 @@ export default function ElectionSetup(){
   const [name,setName]=useState('PILKETOS 2026')
   const [message,setMessage]=useState('')
   const [counts,setCounts]=useState({candidates:0,stations:0,voters:0,staff:0})
+  const [busy,setBusy]=useState(false)
 
   useEffect(()=>{load()},[])
 
@@ -36,8 +37,28 @@ export default function ElectionSetup(){
     }
   }
 
+  async function loadDemo(){
+    if(!confirm('Muat data demo? Data demo lama akan diganti.')) return
+    setBusy(true);setMessage('')
+    const {error}=await supabase.rpc('load_demo_data')
+    setBusy(false)
+    if(error){setMessage(error.message);return}
+    setMessage('Data demo berhasil dimuat.')
+    await load()
+  }
+
+  async function deleteDemo(){
+    if(!confirm('Hapus seluruh data demo? Akun admin tidak akan dihapus.')) return
+    setBusy(true);setMessage('')
+    const {error}=await supabase.rpc('delete_demo_data')
+    setBusy(false)
+    if(error){setMessage(error.message);return}
+    setMessage('Data demo berhasil dihapus.')
+    await load()
+  }
+
   async function createElection(){
-    const {data,error}=await supabase.from('elections').insert({name,status:'draft',allow_blank_vote:false}).select().single()
+    const {data,error}=await supabase.from('elections').insert({name,status:'draft',allow_blank_vote:false,is_demo:false}).select().single()
     if(error){setMessage(error.message);return}
     setElection(data);setMessage('Pemilihan baru dibuat.');await load()
   }
@@ -71,8 +92,18 @@ export default function ElectionSetup(){
 
   return <>
     <header className="page-head"><div><p className="eyebrow">KONFIGURASI</p><h1>Pemilihan</h1><p>Kelola lifecycle Pilketos secara berurutan.</p></div><button className="btn" onClick={load}>Refresh Checklist</button></header>
+
+    <section className="demo-panel">
+      <div><strong>Mode Simulasi</strong><p>Muat 3 kandidat, 3 TPS, dan 30 pemilih sintetis untuk demo ke guru. Semua data demo dapat dihapus sekaligus.</p></div>
+      <div className="actions">
+        {!election&&<button className="btn primary" disabled={busy} onClick={loadDemo}>{busy?'Memproses...':'Muat Data Demo'}</button>}
+        {election?.is_demo&&<button className="btn danger" disabled={busy} onClick={deleteDemo}>Hapus Data Demo</button>}
+      </div>
+    </section>
+
     {!election ? <section className="locked"><h2>Belum ada pemilihan</h2><p>Buat pemilihan baru untuk mulai menyiapkan kandidat, DPT, dan TPS.</p><button className="btn primary" onClick={createElection}>Buat PILKETOS 2026</button></section>
     : <>
+      {election.is_demo&&<div className="demo-badge">MODE DEMO • Aman untuk simulasi</div>}
       <section className="card" style={{marginBottom:20}}>
         <div className="admin-form">
           <input value={name} onChange={e=>setName(e.target.value)}/>
